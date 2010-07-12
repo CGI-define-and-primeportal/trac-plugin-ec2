@@ -24,8 +24,14 @@ class AWSInstanceTableMacro(WikiMacroBase):
         headings = ("Instance", "AMI", "Key", "IP", "State", "Monitored")
         table = tag.table(tag.thead(tag.tr([tag.th(title) for title in headings])), class_="listing")
         tbody = tag.tbody()
-        
-        for r in ec2.get_all_instances():
+
+        try:
+            instance_data = ec2.get_all_instances()
+        except UnicodeDecodeError, e:
+            self.log.exception("Failed to ec2.get_all_instances() for AWSInstanceTableMacro")
+            return tag.div("AWSInstanceTable macro failed.")
+            
+        for r in instance_data:
             groups = [g.id for g in r.groups]
             for i in r.instances:
                 if i.state == "terminated":
