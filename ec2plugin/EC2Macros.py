@@ -1,3 +1,4 @@
+from trac.wiki.api import WikiSystem
 from trac.wiki.macros import WikiMacroBase
 from trac.config import Option
 
@@ -30,7 +31,8 @@ class AWSInstanceTableMacro(WikiMacroBase):
             self.log.exception("Failed to ec2.get_all_instances() for AWSInstanceTableMacro")
             return tag.div("AWSInstanceTable macro failed.")
             
-        for r in instance_data:            
+        for r in instance_data:
+            groups = [g.id for g in r.groups]
             for i in r.instances:
                 if i.state == "terminated":
                     continue
